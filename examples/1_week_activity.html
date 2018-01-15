@@ -46,54 +46,6 @@
       max-width: 80px;
     }
 
-    .date {<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-  <style>
-    body {
-      background: black;
-      font-family: 'Helvetica Neue', Helvetica, Arial, Verdana, sans-serif;
-    }
-
-    ul {
-      margin: 0;
-      padding: 0;
-    }
-
-    li {
-      display: inline-block;
-      margin: 2px 10px;
-    }
-
-    hr {
-      border-color: #565656;
-    }
-
-    svg {
-      display: block;
-      margin: 0 auto;
-    }
-
-    .container {
-      margin: 0 auto;
-    }
-
-    .main  svg {
-      width: 65vw;
-      max-width: 500px;
-    }
-
-    .week {
-      text-align: center;
-    }
-
-    ul.week li svg {
-      width: 8vw;
-      max-width: 80px;
-    }
-
     .date {
       color: white;
       font-size: 25px;
@@ -169,14 +121,14 @@
       .data(data).enter()
       .append('li')
 	    .on('click', function (d) {
-			// Update active class, date and main chart
+			// Update active class, date and main chart (Mouse Interface)
 			d3.selectAll('.circle').classed('active', false);
 			d3.select(this).select('.circle').classed('active', true);
 			d3.select('.date').text(d.date);
 			mainChart.update(d.series);
 		  })
 	  	.on('keydown', function (d) {
-			// Update active class, date and main chart
+			// Update active class, date and main chart (Keyboard Accessible Version)
 			if (d3.event.keyCode==13) {
 				d3.selectAll('.circle').classed('active', false);
 				d3.select(this).select('.circle').classed('active', true);
@@ -186,145 +138,32 @@
 		  })
 	  .attr("tabindex", "0")
 	  .attr("role", "button")
-	  //.data(d.dayFull)
-	  .attr("aria-label", function(d){return d.dayFull})
-	  //.attr("r", function(d){return d[0]})
+	  .attr("aria-label", function(d){
+	  	//Construct "Day of Week" Button Labels in the style / wording of those used in the iOS Native App
+	    var daysMetrics = d.dayFull;
+	    if (d.ringMovement==100) {
+			daysMetrics += " Moving Goal Completed ";
+		} else {
+			daysMetrics += " Moving " + d.ringMovement + " Percent ";
+		};
+	    if (d.ringActive==100) {
+			daysMetrics += "Excercising Goal Completed";
+		} else {
+			daysMetrics += "Excercising " + d.ringActive + " Percent ";
+		};
+	    if (d.ringStanding==100) {
+			daysMetrics += "Standing Goal Completed";
+		} else {
+			daysMetrics += "Standing " + d.ringStanding + " Percent";
+		};
+	    return daysMetrics;
+  	  })
       .append('div').attr('class', 'circle').text(function (d) {
         return d.day;
       })
       .each(function (d, i) {
         d.date = dateFormatter(getDate(i));
         d.series = [d.ringStanding, d.ringActive, d.ringMovement];
-        new RadialProgressChart(this.parentNode, {
-          diameter: 10,
-          stroke: {
-            width: 6,
-            gap: 1
-          },
-          series: d.series
-        });
-      });
-
-  // Return some chronological dates
-  function getDate(i) {
-    var date = new Date('2015-06-16');
-    date.setDate(date.getDate() + i);
-    return date;
-  }
-
-  // Random int between 20-80
-  function getRandom() {
-    return Math.round(Math.random() * 60) + 20;
-  }
-
-  // Select monday by default
-  document.querySelector('li').click();
-
-</script>
-
-</body>
-
-</html>
-      color: white;
-      font-size: 25px;
-      font-weight: 100;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-	  
-    .circle {
-      margin: 3px auto;
-      border-radius: 50%;
-      width: 27px;
-      height: 27px;
-      line-height: 27px;
-      text-align: center;
-      color: #565656;
-      font-size: 14px;
-      font-weight: 300;
-    }
-
-    li:hover .circle {
-      color: white;
-      background-color: #565656;
-
-    }
-
-    .active {
-      color: white;
-      background-color: #fa1654 !important;
-    }
-
-    .rbc-label-start {
-      font-family: fontawesome;
-      font-weight: bold;
-      font-size: 30px;
-    }
-  </style>
-
-</head>
-<body>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.js"></script>
-<script src="../dist/radial-progress-chart.js"></script>
-
-<div class="container">
-  <ul class="week"></ul>
-  <hr>
-  <div class="date"></div>
-  <div class="main"></div>
-</div>
-
-<script>
-  var data = [
-    {day: 'M', dayFull:"Monday"},
-    {day: 'T', dayFull:"Tuesday"},
-    {day: 'W', dayFull:"Wednesday"},
-    {day: 'T', dayFull:"Thursday"},
-    {day: 'F', dayFull:"Friday"},
-    {day: 'S', dayFull:"Saturday"},
-    {day: 'S', dayFull:"Sunday"}
-  ];
-  var dateFormatter = d3.time.format("%A, %B %d, %Y");
-  var mainChart = new RadialProgressChart('.main', {
-        diameter: 130,
-        series: [
-          {labelStart: '\uF106', value: 50},
-          {labelStart: '\uF101', value: 50},
-          {labelStart: '\uF105', value: 50}
-        ]}
-  );
-
-  d3.select('.week').selectAll('li')
-      .data(data).enter()
-      .append('li')
-	    .on('click', function (d) {
-			// Update active class, date and main chart
-			d3.selectAll('.circle').classed('active', false);
-			d3.select(this).select('.circle').classed('active', true);
-			d3.select('.date').text(d.date);
-			mainChart.update(d.series);
-		  })
-	  	.on('keydown', function (d) {
-			// Update active class, date and main chart
-			if (d3.event.keyCode==13) {
-				d3.selectAll('.circle').classed('active', false);
-				d3.select(this).select('.circle').classed('active', true);
-				d3.select('.date').text(d.date);
-				mainChart.update(d.series);
-  			}	
-		  })
-	  .attr("tabindex", "0")
-	  .attr("role", "button")
-	  //.data(d.dayFull)
-	  .attr("aria-label", function(d){return d.dayFull})
-	  //.attr("r", function(d){return d[0]})
-      .append('div').attr('class', 'circle').text(function (d) {
-        return d.day;
-      })
-      .each(function (d, i) {
-        d.date = dateFormatter(getDate(i));
-        d.series = [getRandom(), getRandom(), getRandom()];
         new RadialProgressChart(this.parentNode, {
           diameter: 10,
           stroke: {
